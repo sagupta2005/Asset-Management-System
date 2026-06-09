@@ -1,0 +1,130 @@
+%% Mermaid ER diagram for AI-Powered Smart Asset Management System
+erDiagram
+    USERS {
+        BIGINT id PK
+        VARCHAR first_name
+        VARCHAR last_name
+        VARCHAR email
+    }
+    ROLES {
+        BIGINT id PK
+        VARCHAR name
+    }
+    USER_ROLES {
+        BIGINT user_id FK
+        BIGINT role_id FK
+    }
+    DEPARTMENTS {
+        BIGINT id PK
+        VARCHAR name
+        VARCHAR code
+    }
+    EMPLOYEES {
+        BIGINT id PK
+        VARCHAR employee_code
+        BIGINT user_id FK
+        VARCHAR email
+    }
+    ASSET_CATEGORIES {
+        BIGINT id PK
+        VARCHAR name
+        INT useful_life
+    }
+    VENDORS {
+        BIGINT id PK
+        VARCHAR vendor_code
+        VARCHAR name
+    }
+    ASSETS {
+        BIGINT id PK
+        VARCHAR asset_tag
+        VARCHAR name
+        BIGINT category_id FK
+        BIGINT vendor_id FK
+        BIGINT department_id FK
+        BIGINT assigned_to FK
+        ENUM status
+    }
+    ASSET_ALLOCATIONS {
+        BIGINT id PK
+        BIGINT asset_id FK
+        BIGINT employee_id FK
+        BIGINT allocated_by FK
+    }
+    ASSET_MOVEMENTS {
+        BIGINT id PK
+        BIGINT asset_id FK
+        VARCHAR movement_type
+        TIMESTAMP movement_date
+    }
+    MAINTENANCE_REQUESTS {
+        BIGINT id PK
+        VARCHAR request_number
+        BIGINT asset_id FK
+        BIGINT requested_by FK
+        BIGINT assigned_to FK
+        ENUM status
+    }
+    MAINTENANCE_HISTORY {
+        BIGINT id PK
+        BIGINT request_id FK
+        BIGINT asset_id FK
+    }
+    WARRANTY_TRACKING {
+        BIGINT id PK
+        BIGINT asset_id FK
+        DATE warranty_end_date
+    }
+    ASSET_DOCUMENTS {
+        BIGINT id PK
+        BIGINT asset_id FK
+        VARCHAR file_path
+    }
+    DEPRECIATION_RECORDS {
+        BIGINT id PK
+        BIGINT asset_id FK
+    }
+    ASSET_HEALTH_SCORES {
+        BIGINT id PK
+        BIGINT asset_id FK
+        DECIMAL health_score
+    }
+    NOTIFICATIONS {
+        BIGINT id PK
+        BIGINT user_id FK
+        ENUM type
+    }
+    AUDIT_LOGS {
+        BIGINT id PK
+        BIGINT user_id FK
+        VARCHAR action
+    }
+    BUDGET_FORECASTS {
+        BIGINT id PK
+        BIGINT department_id FK
+    }
+    AI_CHAT_HISTORY {
+        BIGINT id PK
+        BIGINT user_id FK
+        VARCHAR session_id
+    }
+
+    USERS ||--o{ USER_ROLES : "has"
+    ROLES ||--o{ USER_ROLES : "assigned_to"
+    DEPARTMENTS ||--o{ USERS : "contains"
+    USERS ||--o{ EMPLOYEES : "may_be"
+    ASSET_CATEGORIES ||--o{ ASSETS : "categorizes"
+    VENDORS ||--o{ ASSETS : "supplies"
+    DEPARTMENTS ||--o{ ASSETS : "owns"
+    EMPLOYEES ||--o{ ASSET_ALLOCATIONS : "receives"
+    ASSETS ||--o{ ASSET_ALLOCATIONS : "allocated_in"
+    ASSETS ||--o{ ASSET_MOVEMENTS : "moved_in"
+    ASSETS ||--o{ MAINTENANCE_REQUESTS : "has_requests"
+    MAINTENANCE_REQUESTS ||--o{ MAINTENANCE_HISTORY : "generates"
+    ASSETS ||--o{ WARRANTY_TRACKING : "may_have"
+    ASSETS ||--o{ ASSET_DOCUMENTS : "documents"
+    ASSETS ||--o{ DEPRECIATION_RECORDS : "has"
+    ASSETS ||--o{ ASSET_HEALTH_SCORES : "scored"
+    USERS ||--o{ NOTIFICATIONS : "receives"
+    USERS ||--o{ AI_CHAT_HISTORY : "chats"
+    DEPARTMENTS ||--o{ BUDGET_FORECASTS : "for"
