@@ -15,6 +15,9 @@ const ForgotPassword  = lazy(() => import('./pages/auth/ForgotPasswordPage'))
 const DashboardPage   = lazy(() => import('./pages/dashboard/DashboardPage'))
 const AssetsPage      = lazy(() => import('./pages/assets/AssetsPage'))
 const AssetFormPage   = lazy(() => import('./pages/assets/AssetFormPage'))
+const AssetDetailPage = lazy(() => import('./pages/assets/AssetDetailPage'))
+const EmployeesPage   = lazy(() => import('./pages/employees/EmployeesPage'))
+const MaintenancePage = lazy(() => import('./pages/maintenance/MaintenancePage'))
 const ReportsPage     = lazy(() => import('./pages/reports/ReportsPage'))
 const AiAssistantPage = lazy(() => import('./pages/ai/AiAssistantPage'))
 const QrScannerPage   = lazy(() => import('./pages/qr/QrScannerPage'))
@@ -124,20 +127,20 @@ export default function App() {
                 <Route path="/dashboard"        element={<DashboardPage />} />
                 <Route path="/assets"           element={<AssetsPage />} />
                 <Route path="/assets/new"       element={<AssetFormPage />} />
-                <Route path="/assets/:id"       element={<ModulePlaceholder title="Asset Passport" />} />
+                <Route path="/assets/:id"       element={<AssetDetailPage />} />
                 <Route path="/assets/:id/edit"  element={<EditAssetRoute />} />
                 <Route path="/reports"          element={<ReportsPage />} />
                 <Route path="/ai-assistant"     element={<AiAssistantPage />} />
                 <Route path="/qr-scanner"      element={<QrScannerPage />} />
                 <Route path="/ocr-scanner"      element={<OcrScannerPage />} />
+                <Route path="/employees"        element={<EmployeesPage />} />
+                <Route path="/maintenance"      element={<MaintenancePage />} />
 
                 {/* Scaffolded modules */}
                 {[
                   ['categories',   'Asset Categories'],
-                  ['employees',    'Employees Management'],
                   ['allocation',   'Asset Allocation'],
                   ['vendors',      'Vendor Management'],
-                  ['maintenance',  'Maintenance Management'],
                   ['return',       'Asset Returns'],
                   ['warranty',     'Warranty Tracker'],
                   ['depreciation', 'Depreciation Ledger'],
