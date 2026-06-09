@@ -47,6 +47,9 @@ async function connectDatabase() {
 
     await seedDefaultAuthData(models);
 
+    const { seedEnterpriseData } = require('./seeder');
+    await seedEnterpriseData();
+
     return sequelize;
   } catch (error) {
     logger.error(`❌ Database connection failed: ${error.message}`);
