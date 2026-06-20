@@ -5,7 +5,7 @@ import { Toaster } from 'react-hot-toast'
 import ErrorBoundary from './components/common/ErrorBoundary'
 import PageLoader from './components/common/PageLoader'
 import NotFoundPage from './components/common/NotFoundPage'
-import { ProtectedRoute, PublicRoute } from './components/layout/ProtectedRoute'
+import { ProtectedRoute, PublicRoute, AdminRoute, SuperAdminRoute } from './components/layout/ProtectedRoute'
 
 // ─── Lazy-loaded routes (code splitting) ─────────────────────────────────────
 const AppLayout       = lazy(() => import('./components/layout/AppLayout'))
@@ -26,6 +26,12 @@ const ReportsPage     = lazy(() => import('./pages/reports/ReportsPage'))
 const AiAssistantPage = lazy(() => import('./pages/ai/AiAssistantPage'))
 const QrScannerPage   = lazy(() => import('./pages/qr/QrScannerPage'))
 const OcrScannerPage  = lazy(() => import('./pages/ocr/OcrScannerPage'))
+const ReturnAssetsPage = lazy(() => import('./pages/return/ReturnAssetsPage'))
+const NotificationsPage = lazy(() => import('./pages/notifications/NotificationsPage'))
+const SettingsPage    = lazy(() => import('./pages/settings/SettingsPage'))
+const UsersPage       = lazy(() => import('./pages/users/UsersPage'))
+
+const AssetPassportPage = lazy(() => import('./pages/assets/AssetPassportPage'))
 
 // ─── Query Client ──────────────────────────────────────────────────────────────
 const queryClient = new QueryClient({
@@ -44,48 +50,22 @@ function EditAssetRoute() {
   return <AssetFormPage assetId={id} />
 }
 
+import ComingSoonPlaceholder from './components/common/ComingSoonPlaceholder'
+
 // ─── Module Under Development Placeholder ────────────────────────────────────
 function ModulePlaceholder({ title }) {
   return (
-    <div className="animate-fade-in">
-      <div className="page-header">
-        <div className="flex items-center gap-2 mb-0.5">
-          <div className="w-1 h-6 rounded-full" style={{ background: '#8B0000' }} />
-          <h1 className="page-title">{title}</h1>
-        </div>
-        <p className="page-subtitle pl-3">This module is under active development.</p>
-      </div>
-      <div className="card p-8 text-center"
-           style={{ borderTop: '3px solid #8B0000' }}>
-        <div className="w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-4"
-             style={{ background: 'rgba(139,0,0,0.08)', border: '1px solid rgba(139,0,0,0.2)' }}>
-          <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#8B0000" strokeWidth="1.5">
-            <rect x="2" y="3" width="20" height="14" rx="2" ry="2"/>
-            <line x1="8" y1="21" x2="16" y2="21"/><line x1="12" y1="17" x2="12" y2="21"/>
-          </svg>
-        </div>
-        <h2 className="text-base font-semibold mb-2" style={{ color: 'rgb(var(--text-primary))' }}>
-          {title} — Coming Soon
-        </h2>
-        <p className="text-sm mb-6" style={{ color: 'rgb(var(--text-secondary))' }}>
-          The backend API for this module is fully scaffolded and ready. The UI is being developed as part of the Indian Railways AMS roadmap.
-        </p>
-        <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 max-w-lg mx-auto">
-          {[
-            { label: 'Backend API', status: 'Ready', ok: true },
-            { label: 'Database Schema', status: 'Deployed', ok: true },
-            { label: 'UI Development', status: 'In Progress', ok: false },
-          ].map(({ label, status, ok }) => (
-            <div key={label} className="p-3 rounded-md text-center"
-                 style={{ background: 'rgb(var(--bg-elevated))', border: '1px solid rgb(var(--border-color))' }}>
-              <div className={`inline-flex items-center gap-1.5 px-2 py-0.5 rounded text-xs font-medium mb-1 ${ok ? 'badge-success' : 'badge-warning'}`}>
-                {ok ? '✓' : '...'} {status}
-              </div>
-              <p className="text-xs" style={{ color: 'rgb(var(--text-muted))' }}>{label}</p>
-            </div>
-          ))}
+    <div className="space-y-6">
+      <div className="page-header mb-0">
+        <div>
+          <div className="flex items-center gap-2 mb-0.5">
+            <div className="w-1 h-6 rounded-full" style={{ background: '#8B0000' }} />
+            <h1 className="page-title">{title}</h1>
+          </div>
+          <p className="page-subtitle pl-3">This module is under active development.</p>
         </div>
       </div>
+      <ComingSoonPlaceholder title={title} />
     </div>
   )
 }
@@ -124,40 +104,51 @@ export default function App() {
               <Route path="/forgot-password" element={<ForgotPassword />} />
             </Route>
 
+            {/* Public unauthenticated Asset Passport route */}
+            <Route path="/assets/passport/:assetTag" element={<AssetPassportPage />} />
+
             {/* Protected app routes */}
             <Route element={<ProtectedRoute />}>
               <Route element={<AppLayout />}>
                 <Route index element={<Navigate to="/dashboard" replace />} />
                 <Route path="/dashboard"        element={<DashboardPage />} />
                 <Route path="/assets"           element={<AssetsPage />} />
-                <Route path="/assets/new"       element={<AssetFormPage />} />
                 <Route path="/assets/:id"       element={<AssetDetailPage />} />
-                <Route path="/assets/:id/edit"  element={<EditAssetRoute />} />
-                <Route path="/reports"          element={<ReportsPage />} />
                 <Route path="/ai-assistant"     element={<AiAssistantPage />} />
                 <Route path="/qr-scanner"      element={<QrScannerPage />} />
                 <Route path="/ocr-scanner"      element={<OcrScannerPage />} />
-                <Route path="/employees"        element={<EmployeesPage />} />
                 <Route path="/maintenance"      element={<MaintenancePage />} />
-                <Route path="/allocation"       element={<AllocationPage />} />
-                <Route path="/vendors"          element={<VendorsPage />} />
-                <Route path="/warranty"         element={<WarrantyPage />} />
-                <Route path="/depreciation"     element={<DepreciationPage />} />
+                <Route path="/return"           element={<ReturnAssetsPage />} />
+                <Route path="/notifications"    element={<NotificationsPage />} />
+                <Route path="/settings"         element={<SettingsPage />} />
 
-                {/* Scaffolded modules */}
-                {[
-                  ['categories',   'Asset Categories'],
-                  ['return',       'Asset Returns'],
-                  ['movements',    'Asset Movements'],
-                  ['health',       'Asset Health Monitor'],
-                  ['budget',       'Budget Forecasting'],
-                  ['audit-logs',   'Audit Logs'],
-                  ['notifications','Notifications Center'],
-                  ['users',        'User Administration'],
-                  ['settings',     'System Settings'],
-                ].map(([path, title]) => (
-                  <Route key={path} path={`/${path}`} element={<ModulePlaceholder title={title} />} />
-                ))}
+                {/* Admin-only routes */}
+                <Route element={<AdminRoute />}>
+                  <Route path="/assets/new"       element={<AssetFormPage />} />
+                  <Route path="/assets/:id/edit"  element={<EditAssetRoute />} />
+                  <Route path="/reports"          element={<ReportsPage />} />
+                  <Route path="/employees"        element={<EmployeesPage />} />
+                  <Route path="/allocation"       element={<AllocationPage />} />
+                  <Route path="/vendors"          element={<VendorsPage />} />
+                  <Route path="/warranty"         element={<WarrantyPage />} />
+                  <Route path="/depreciation"     element={<DepreciationPage />} />
+
+                  {/* Scaffolded Admin modules */}
+                  {[
+                    ['categories',   'Asset Categories'],
+                    ['movements',    'Asset Movements'],
+                    ['health',       'Asset Health Monitor'],
+                    ['budget',       'Budget Forecasting'],
+                  ].map(([path, title]) => (
+                    <Route key={path} path={`/${path}`} element={<ModulePlaceholder title={title} />} />
+                  ))}
+                </Route>
+
+                {/* Super Admin-only routes */}
+                <Route element={<SuperAdminRoute />}>
+                  <Route path="/users"            element={<UsersPage />} />
+                  <Route path="/audit-logs"       element={<ModulePlaceholder title="Audit Logs" />} />
+                </Route>
               </Route>
             </Route>
 

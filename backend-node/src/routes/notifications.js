@@ -20,7 +20,17 @@ router.put('/:id/read', authenticate, async (req, res) => {
   res.status(200).json(ApiResponse.success(data, 'Marked as read'));
 });
 
+router.patch('/:id/read', authenticate, async (req, res) => {
+  const data = await notificationService.markAsRead(req.params.id, req.user.id);
+  res.status(200).json(ApiResponse.success(data, 'Marked as read'));
+});
+
 router.put('/mark-all-read', authenticate, async (req, res) => {
+  await notificationService.markAllAsRead(req.user.id);
+  res.status(200).json(ApiResponse.noContent('All notifications marked as read'));
+});
+
+router.patch('/mark-all-read', authenticate, async (req, res) => {
   await notificationService.markAllAsRead(req.user.id);
   res.status(200).json(ApiResponse.noContent('All notifications marked as read'));
 });

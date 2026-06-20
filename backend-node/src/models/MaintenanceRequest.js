@@ -31,6 +31,12 @@ const MaintenanceRequest = sequelize.define('MaintenanceRequest', {
 }, {
   tableName: 'maintenance_requests',
   timestamps: true,
+  indexes: [
+    { unique: true, fields: ['requestNumber'] },
+    { fields: ['status'] },
+    { fields: ['priority'] },
+    { fields: ['asset_id'] },
+  ]
 });
 
 module.exports = MaintenanceRequest;

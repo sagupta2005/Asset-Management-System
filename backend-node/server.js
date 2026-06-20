@@ -34,6 +34,7 @@ const qrRoutes          = require('./src/routes/qr');
 const reportRoutes      = require('./src/routes/reports');
 const aiRoutes          = require('./src/routes/ai');
 const ocrRoutes         = require('./src/routes/ocr');
+const userRoutes        = require('./src/routes/users');
 
 // ─── Swagger ─────────────────────────────────────────────────────────────────
 const { swaggerSpec, swaggerUi } = require('./src/config/swagger');
@@ -121,6 +122,7 @@ app.use('/api/qr',            qrRoutes);
 app.use('/api/reports',       reportRoutes);
 app.use('/api/ai',            aiRoutes);
 app.use('/api/ocr',           ocrRoutes);
+app.use('/api/users',          userRoutes);
 
 // ─── Actuator Health Check ───────────────────────────────────────────────────
 app.get('/api/actuator/health', (req, res) => {

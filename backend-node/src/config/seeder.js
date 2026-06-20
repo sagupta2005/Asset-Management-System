@@ -115,7 +115,7 @@ async function seedEnterpriseData() {
         departmentId: dep.id,
         designation: designations[i % designations.length],
         employeeCode: `EMP-${1000 + i}`,
-        joiningDate: new Date(Date.now() - (365 * 24 * 60 * 60 * 1000) * (1 + (i % 3)))
+        joinDate: new Date(Date.now() - (365 * 24 * 60 * 60 * 1000) * (1 + (i % 3)))
       };
     });
     const employees = await Employee.bulkCreate(employeesData);
@@ -195,12 +195,12 @@ async function seedEnterpriseData() {
         currentValue,
         vendorId: vendor.id,
         departmentId: dep.id,
-        assigned_to_id: emp ? emp.id : null,
+        assignedToId: emp ? emp.id : null,
         location: `Office Floor ${1 + (i % 4)}, Desk ${10 + (i % 40)}`,
         warrantyExpiry: expiryDate,
         status,
-        qrCode: `AST-${10000 + i}`,
-        created_by_id: adminId
+        qrCodeUrl: `AST-${10000 + i}`,
+        createdById: adminId
       });
     }
 
@@ -216,7 +216,7 @@ async function seedEnterpriseData() {
     for (let i = 0; i < 75; i++) {
       const asset = assets[i % assets.length];
       const emp = employees[(i + 5) % employees.length];
-      const allocatedDate = new Date(asset.purchaseDate.getTime() + (10 * 24 * 60 * 60 * 1000));
+      const allocatedDate = new Date(new Date(asset.purchaseDate).getTime() + (10 * 24 * 60 * 60 * 1000));
       const expectedReturn = new Date(allocatedDate.getTime() + (90 * 24 * 60 * 60 * 1000));
       const actualReturn = new Date(expectedReturn.getTime() - (5 * 24 * 60 * 60 * 1000));
 
@@ -239,7 +239,7 @@ async function seedEnterpriseData() {
       const asset = assets[i];
       if (asset.status === 'ASSIGNED') {
         const emp = employees[i % employees.length];
-        const allocatedDate = new Date(asset.purchaseDate.getTime() + (15 * 24 * 60 * 60 * 1000));
+        const allocatedDate = new Date(new Date(asset.purchaseDate).getTime() + (15 * 24 * 60 * 60 * 1000));
         const expectedReturn = new Date(allocatedDate.getTime() + (365 * 24 * 60 * 60 * 1000));
 
         allocationsData.push({
@@ -262,7 +262,7 @@ async function seedEnterpriseData() {
       for (let i = 0; i < diff; i++) {
         const asset = assets[(i * 3) % assets.length];
         const emp = employees[(i * 2) % employees.length];
-        const allocatedDate = new Date(asset.purchaseDate.getTime() + (5 * 24 * 60 * 60 * 1000));
+        const allocatedDate = new Date(new Date(asset.purchaseDate).getTime() + (5 * 24 * 60 * 60 * 1000));
         const expectedReturn = new Date(allocatedDate.getTime() + (60 * 24 * 60 * 60 * 1000));
         const actualReturn = new Date(expectedReturn.getTime());
 
@@ -293,21 +293,32 @@ async function seedEnterpriseData() {
       'License renewal', 'HDD crash recovery', 'Power supply issue'
     ];
 
+    const issueTypeMapping = [
+      'HARDWARE', 'HARDWARE', 'HARDWARE', 'HARDWARE',
+      'SOFTWARE', 'NETWORK', 'HARDWARE',
+      'HARDWARE', 'PHYSICAL_DAMAGE', 'ROUTINE', 'ROUTINE',
+      'ROUTINE', 'SOFTWARE', 'HARDWARE'
+    ];
+
     for (let i = 0; i < 50; i++) {
       const asset = assets[i % assets.length];
-      const status = i % 5 === 0 ? 'PENDING' : (i % 8 === 0 ? 'ONGOING' : 'COMPLETED');
-      const startDate = new Date(asset.purchaseDate.getTime() + (45 * 24 * 60 * 60 * 1000));
-      const nextDueDate = status === 'COMPLETED' ? new Date(startDate.getTime() + (180 * 24 * 60 * 60 * 1000)) : null;
+      const status = i % 5 === 0 ? 'OPEN' : (i % 8 === 0 ? 'IN_PROGRESS' : 'COMPLETED');
+      const startDate = new Date(new Date(asset.purchaseDate).getTime() + (45 * 24 * 60 * 60 * 1000));
+      const completedAt = status === 'COMPLETED' ? new Date(startDate.getTime() + (2 * 24 * 60 * 60 * 1000)) : null;
 
       maintenanceData.push({
+        requestNumber: `REQ-${20000 + i}`,
         assetId: asset.id,
-        maintenanceType: issues[i % issues.length],
+        issueType: issueTypeMapping[i % issueTypeMapping.length],
+        title: issues[i % issues.length],
         description: `Detailed checkup and repair performed for issue: ${issues[i % issues.length]}`,
-        startDate,
-        nextDueDate,
+        startedAt: startDate,
+        completedAt,
         status,
-        cost: status === 'COMPLETED' ? Math.round(1500 * (1 + (i % 8))) : 0.00,
-        technician: `Technician Team ${1 + (i % 4)}`
+        actualCost: status === 'COMPLETED' ? Math.round(1500 * (1 + (i % 8))) : 0.00,
+        estimatedCost: Math.round(1500 * (1 + (i % 8))),
+        assignedTechnician: `Technician Team ${1 + (i % 4)}`,
+        requestedById: adminId
       });
     }
     const maintenanceRecords = await MaintenanceRequest.bulkCreate(maintenanceData);
@@ -317,7 +328,7 @@ async function seedEnterpriseData() {
     const warrantyData = [];
     for (let i = 0; i < 50; i++) {
       const asset = assets[(i * 2) % assets.length];
-      const expiry = new Date(asset.purchaseDate.getTime() + (365 * 24 * 60 * 60 * 1000));
+      const expiry = new Date(new Date(asset.purchaseDate).getTime() + (365 * 24 * 60 * 60 * 1000));
       const vendor = vendors[i % vendors.length];
       const types = ['MANUFACTURER', 'EXTENDED', 'THIRD_PARTY', 'ON_SITE', 'COMPREHENSIVE'];
 
@@ -341,9 +352,11 @@ async function seedEnterpriseData() {
         'UPDATE_VENDORS', 'UPDATE_EMPLOYEE', 'ADD_MAINTENANCE', 'COMPLETE_MAINTENANCE'
       ];
       return {
-        performed_by_id: adminId,
+        performedById: adminId,
         action: actions[i % actions.length],
-        details: `Performed system action ${actions[i % actions.length]} for record ID ${i + 1}`,
+        entityType: 'Asset',
+        entityId: i + 1,
+        description: `Performed system action ${actions[i % actions.length]} for record ID ${i + 1}`,
         ipAddress: `192.168.1.${10 + (i % 50)}`,
         userAgent: 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 Chrome/120.0.0.0'
       };
@@ -362,10 +375,10 @@ async function seedEnterpriseData() {
         assetId: asset.id,
         fromLocation: `Office Floor ${1 + (i % 4)}, Desk ${10 + (i % 40)}`,
         toLocation: `Office Floor ${1 + ((i + 1) % 4)}, Room ${20 + (i % 10)}`,
-        fromDepartmentId: depFrom.id,
-        toDepartmentId: depTo.id,
-        movementDate: new Date(asset.purchaseDate.getTime() + (30 * 24 * 60 * 60 * 1000)),
-        moved_by_id: adminId
+        fromDepartment: depFrom.name,
+        toDepartment: depTo.name,
+        movementDate: new Date(new Date(asset.purchaseDate).getTime() + (30 * 24 * 60 * 60 * 1000)),
+        movedById: adminId
       });
     }
     const movements = await AssetMovement.bulkCreate(movementsData);
@@ -382,7 +395,7 @@ async function seedEnterpriseData() {
       'Warranty for asset is expiring within the next 30 days.',
       'Maintenance work order has been completed by technician.'
     ];
-    const types = ['INFO', 'SUCCESS', 'WARNING', 'SUCCESS'];
+    const types = ['ASSET_ASSIGNED', 'ASSET_RETURNED', 'WARRANTY_EXPIRING', 'MAINTENANCE_COMPLETE'];
 
     for (let i = 0; i < 50; i++) {
       const index = i % 4;

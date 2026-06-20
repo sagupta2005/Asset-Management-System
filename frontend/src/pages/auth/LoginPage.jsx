@@ -14,8 +14,19 @@ export default function LoginPage() {
   const { setAuth } = useAuthStore()
   const { success, error } = useToast()
   const [showPassword, setShowPassword] = useState(false)
+  const [portal, setPortal] = useState('admin') // 'admin' | 'employee'
 
-  const { register, handleSubmit, formState: { errors, isSubmitting } } = useForm()
+  const { register, handleSubmit, setValue, formState: { errors, isSubmitting } } = useForm()
+
+  React.useEffect(() => {
+    if (portal === 'admin') {
+      setValue('email', 'admin@company.com')
+      setValue('password', 'Admin@123')
+    } else {
+      setValue('email', 'employee@company.com')
+      setValue('password', 'Emp@123')
+    }
+  }, [portal, setValue])
 
   const loginMutation = useMutation({
     mutationFn: authApi.login,
@@ -77,27 +88,15 @@ export default function LoginPage() {
             <p className="text-sm leading-relaxed" style={{ color: 'rgba(160,178,205,0.85)' }}>
               A centralized digital platform for tracking, managing, and optimizing railway assets across all divisions and departments.
             </p>
-
-            {/* Feature list */}
-            <div className="mt-10 space-y-3 text-left">
-              {[
-                { label: 'Comprehensive asset tracking and lifecycle management' },
-                { label: 'Maintenance scheduling and warranty monitoring' },
-                { label: 'AI-powered insights and budget forecasting' },
-                { label: 'Role-based access control and audit logging' },
-                { label: 'Real-time depreciation and valuation reports' },
-              ].map((f, i) => (
-                <div key={i} className="flex items-start gap-3 px-4 py-3 rounded-md"
-                  style={{ background: 'rgba(255,255,255,0.04)', border: '1px solid rgba(255,255,255,0.07)' }}>
-                  <ChevronRight size={14} className="flex-shrink-0 mt-0.5" style={{ color: '#B8860B' }} />
-                  <span className="text-sm" style={{ color: 'rgba(190,205,225,0.9)' }}>{f.label}</span>
-                </div>
-              ))}
+            {/* Support Helpdesk */}
+            <div className="mt-6 p-4 rounded-lg text-left" style={{ background: 'rgba(255,255,255,0.02)', border: '1px solid rgba(255,255,255,0.06)' }}>
+              <p className="text-xs font-bold text-white mb-1 uppercase tracking-wide">IR-AMP System Helpdesk</p>
+              <p className="text-xs text-slate-400">For access-related issues or system assistance, contact CRIS Support:</p>
+              <div className="mt-2 flex flex-wrap gap-x-4 text-xs font-mono" style={{ color: '#B8860B' }}>
+                <span>Email: support@cris.org.in</span>
+                <span>Phone: 011-23301040</span>
+              </div>
             </div>
-
-            <p className="mt-8 text-xs" style={{ color: 'rgba(120,140,165,0.7)' }}>
-              Confidential — For authorized personnel only
-            </p>
           </div>
         </div>
 
@@ -125,6 +124,24 @@ export default function LoginPage() {
               {/* Card top accent */}
               <div className="h-1" style={{ background: 'linear-gradient(90deg, #8B0000, #B8860B, #8B0000)' }} />
 
+              {/* Portal Selector Tabs */}
+              <div className="flex border-b border-white/10 bg-black/20">
+                <button
+                  type="button"
+                  onClick={() => setPortal('admin')}
+                  className={`flex-1 py-3.5 text-center font-bold text-sm transition-all duration-150 ${portal === 'admin' ? 'text-white border-b-2 border-[#B8860B] bg-white/5 font-extrabold' : 'text-slate-400 hover:text-white hover:bg-white/2'}`}
+                >
+                  Admin Portal
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setPortal('employee')}
+                  className={`flex-1 py-3.5 text-center font-bold text-sm transition-all duration-150 ${portal === 'employee' ? 'text-white border-b-2 border-[#B8860B] bg-white/5 font-extrabold' : 'text-slate-400 hover:text-white hover:bg-white/2'}`}
+                >
+                  Employee Portal
+                </button>
+              </div>
+
               <div className="p-8">
                 {/* Form header */}
                 <div className="mb-7">
@@ -132,10 +149,15 @@ export default function LoginPage() {
                     <div className="w-5 h-5 rounded flex items-center justify-center" style={{ background: '#8B0000' }}>
                       <Lock size={11} className="text-white" />
                     </div>
-                    <h2 className="text-lg font-bold text-white">Secure Sign-In</h2>
+                    <h2 className="text-lg font-bold text-white">
+                      Secure Sign-In — {portal === 'admin' ? 'Admin Portal' : 'Employee Portal'}
+                    </h2>
                   </div>
                   <p className="text-sm pl-7" style={{ color: 'rgba(140,160,185,0.9)' }}>
-                    Authorized access only. All sessions are monitored and logged.
+                    {portal === 'admin'
+                      ? 'Access administrative panels, allocations, audits, and analytical reports.'
+                      : 'Access your assigned assets, declare returns, and check system notifications.'
+                    }
                   </p>
                 </div>
 
@@ -252,10 +274,45 @@ export default function LoginPage() {
                   <p className="text-center text-xs" style={{ color: 'rgba(140,160,185,0.7)' }}>
                     New employee?{' '}
                     <Link to="/register" className="font-semibold transition-colors hover:text-white"
-                          style={{ color: '#B8860B' }}>
+                      style={{ color: '#B8860B' }}>
                       Register your account
                     </Link>
                   </p>
+                </div>
+
+                {/* Scrolling Notice Board / Circulars */}
+                <div className="mt-5 pt-4 border-t border-white/10 text-left">
+                  <h3 className="text-xs font-bold uppercase tracking-wider mb-2 flex items-center gap-2" style={{ color: '#B8860B' }}>
+                    <span className="w-1.5 h-3 bg-[#B8860B] rounded-sm" />
+                    Latest Circulars & Notices
+                  </h3>
+                  <div className="h-24 overflow-hidden relative rounded-md border border-white/5 p-2 bg-black/45 backdrop-blur-sm">
+                    <div className="animate-marquee space-y-2">
+                      {[
+                        { date: '15-Jun', text: 'Asset Condemnation & Disposal guidelines updated.' },
+                        { date: '10-Jun', text: 'All zonal heads must upload physical verification reports.' },
+                        { date: '02-Jun', text: 'Mandatory QR code tagging for rolling stock parts.' },
+                        { date: '28-May', text: 'AI-based depreciation module integration completed.' },
+                      ].map((notice, idx) => (
+                        <div key={idx} className="text-[11px] border-b border-white/5 pb-1 flex items-start gap-1">
+                          <span className="font-bold text-[9px] bg-red-950/70 text-red-400 px-1.5 py-0.5 rounded flex-shrink-0">{notice.date}</span>
+                          <span className="truncate" style={{ color: 'rgba(200, 215, 235, 0.9)' }} title={notice.text}>{notice.text}</span>
+                        </div>
+                      ))}
+                      {/* Duplicate for marquee continuous scroll */}
+                      {[
+                        { date: '15-Jun', text: 'Asset Condemnation & Disposal guidelines updated.' },
+                        { date: '10-Jun', text: 'All zonal heads must upload physical verification reports.' },
+                        { date: '02-Jun', text: 'Mandatory QR code tagging for rolling stock parts.' },
+                        { date: '28-May', text: 'AI-based depreciation module integration completed.' },
+                      ].map((notice, idx) => (
+                        <div key={`dup-${idx}`} className="text-[11px] border-b border-white/5 pb-1 flex items-start gap-1">
+                          <span className="font-bold text-[9px] bg-red-950/70 text-red-400 px-1.5 py-0.5 rounded flex-shrink-0">{notice.date}</span>
+                          <span className="truncate" style={{ color: 'rgba(200, 215, 235, 0.9)' }} title={notice.text}>{notice.text}</span>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
                 </div>
               </div>
             </div>

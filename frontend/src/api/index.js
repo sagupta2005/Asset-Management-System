@@ -10,8 +10,14 @@ import {
   demoMaintenancePage,
   demoWarrantyPage,
   demoDepreciationPage,
+  demoAssets,
+  demoAllocations,
+  demoMaintenance,
+  demoWarranties,
+  demoDepreciation,
 } from './mockData'
 export { assetApi } from './assetApi'
+export { userApi } from './userApi'
 
 export const employeeApi = {
   getAll: (params) => fallbackOnNetworkError(axiosClient.get('/employees', { params }), demoEmployeePage),
@@ -127,4 +133,17 @@ export const departmentApi = {
   create: (data) => axiosClient.post('/departments', data),
   update: (id, data) => axiosClient.put(`/departments/${id}`, data),
   delete: (id) => axiosClient.delete(`/departments/${id}`),
+}
+
+export const publicApi = {
+  getPassport: (assetTag) => fallbackOnNetworkError(
+    axiosClient.get(`/assets/public/passport/${assetTag}`),
+    {
+      asset: demoAssets.find(a => a.assetTag === assetTag) || demoAssets.find(a => String(a.id) === String(assetTag)) || demoAssets[0],
+      allocations: demoAllocations.filter(al => al.assetTag === assetTag),
+      maintenance: demoMaintenance.filter(m => m.assetName === (demoAssets.find(a => a.assetTag === assetTag)?.name || '')),
+      warranty: demoWarranties.find(w => w.contractNumber === `WNT-${assetTag}`) || demoWarranties[0],
+      depreciation: demoDepreciation.filter(d => d.assetName === (demoAssets.find(a => a.assetTag === assetTag)?.name || ''))
+    }
+  )
 }

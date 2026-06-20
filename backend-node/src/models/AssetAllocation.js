@@ -19,6 +19,11 @@ const AssetAllocation = sequelize.define('AssetAllocation', {
 }, {
   tableName: 'asset_allocations',
   timestamps: true,
+  indexes: [
+    { fields: ['status'] },
+    { fields: ['asset_id'] },
+    { fields: ['employee_id'] },
+  ]
 });
 
 module.exports = AssetAllocation;

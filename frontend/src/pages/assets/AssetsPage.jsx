@@ -8,8 +8,12 @@ import { useDebounce } from '../../hooks/useDebounce'
 import { useToast } from '../../hooks/useToast'
 import { ASSET_STATUSES } from '../../utils/constants'
 import useAuthStore from '../../store/authStore'
+import useLanguageStore from '../../store/languageStore'
+import { useTranslation } from '../../utils/translations'
 
 export default function AssetsPage() {
+  const { lang } = useLanguageStore()
+  const t = useTranslation(lang)
   const { isAdmin } = useAuthStore()
   const qc = useQueryClient()
   const { success, error } = useToast()
@@ -65,9 +69,9 @@ export default function AssetsPage() {
       {/* ── Page Header ─────────────────────────────────────────────────────── */}
       <div className="page-header">
         <div>
-          <h1 className="page-title">Assets</h1>
+          <h1 className="page-title">{t("Assets")}</h1>
           <nav className="text-xs mt-0.5" style={{ color: 'rgb(var(--text-muted))' }}>
-            Dashboard &rsaquo; <span style={{ color: 'var(--ams-blue-mid)' }}>Assets</span>
+            {t("Dashboard")} &rsaquo; <span style={{ color: 'var(--ams-blue-mid)' }}>{t("Assets")}</span>
           </nav>
         </div>
         <div className="flex items-center gap-2">
@@ -78,7 +82,7 @@ export default function AssetsPage() {
           {isAdmin && isAdmin() && (
             <Link to="/assets/new" className="btn-primary btn-sm">
               <Plus size={14} />
-              Add Asset
+              {t("Add Asset")}
             </Link>
           )}
         </div>
@@ -93,7 +97,7 @@ export default function AssetsPage() {
                     style={{ color: 'rgb(var(--text-muted))' }} />
             <input
               type="text"
-              placeholder="Search assets..."
+              placeholder={t("Search assets...")}
               value={search}
               onChange={e => { setSearch(e.target.value); setPage(0) }}
               className="search-input"
@@ -113,7 +117,7 @@ export default function AssetsPage() {
             className="input text-sm h-[38px]"
             style={{ width: 'auto', minWidth: '140px' }}
           >
-            <option value="">All Statuses</option>
+            <option value="">{t("All Statuses")}</option>
             {ASSET_STATUSES.map(s => <option key={s.value} value={s.value}>{s.label}</option>)}
           </select>
 
@@ -122,14 +126,14 @@ export default function AssetsPage() {
             onClick={() => { setSearch(''); setStatus(''); setPage(0) }}
             className="btn-secondary btn-sm"
           >
-            Clear
+            {t("Clear")}
           </button>
           <button onClick={() => refetch()} className="btn-secondary btn-sm" title="Refresh">
             <RefreshCw size={14} className={isFetching ? 'animate-spin' : ''} />
           </button>
           <button onClick={() => handleDownload('pdf')} className="btn-secondary btn-sm" title="Export PDF">
             <Download size={14} />
-            Export
+            {t("Export")}
           </button>
         </div>
       </div>
@@ -140,9 +144,9 @@ export default function AssetsPage() {
         <div className="px-5 py-3.5 flex items-center justify-between border-b"
              style={{ borderColor: 'rgb(var(--border-color))' }}>
           <p className="text-sm font-semibold" style={{ color: 'rgb(var(--text-primary))' }}>
-            Asset Inventory
+            {t("Asset Inventory")}
             <span className="ml-2 text-xs font-normal" style={{ color: 'rgb(var(--text-muted))' }}>
-              ({totalElements} total)
+              ({totalElements} {t("total")})
             </span>
           </p>
           {isFetching && !isLoading && (
@@ -165,15 +169,15 @@ export default function AssetsPage() {
               <table className="table">
                 <thead>
                   <tr>
-                    <th>Asset ID</th>
-                    <th>Asset Name</th>
-                    <th>Category</th>
-                    <th>Serial Number</th>
-                    <th>Status</th>
-                    <th>Assigned To</th>
-                    <th>Purchase Cost</th>
-                    <th>Warranty</th>
-                    <th className="text-center">Action</th>
+                    <th>{t("Asset ID")}</th>
+                    <th>{t("Asset Name")}</th>
+                    <th>{t("Category")}</th>
+                    <th>{t("Serial Number")}</th>
+                    <th>{t("Status")}</th>
+                    <th>{t("Assigned To")}</th>
+                    <th>{t("Purchase Cost")}</th>
+                    <th>{t("Warranty")}</th>
+                    <th className="text-center">{t("Action")}</th>
                   </tr>
                 </thead>
                 <tbody>
@@ -187,7 +191,7 @@ export default function AssetsPage() {
                           </div>
                           <div>
                             <p className="text-sm font-medium" style={{ color: 'rgb(var(--text-secondary))' }}>
-                              No assets found
+                              {t("No assets found")}
                             </p>
                             <p className="text-xs mt-0.5" style={{ color: 'rgb(var(--text-muted))' }}>
                               {search ? 'Try adjusting your search terms' : 'Add your first asset to get started'}
@@ -195,7 +199,7 @@ export default function AssetsPage() {
                           </div>
                           {isAdmin && isAdmin() && !search && (
                             <Link to="/assets/new" className="btn-primary btn-sm">
-                              <Plus size={13} /> Add Asset
+                              <Plus size={13} /> {t("Add Asset")}
                             </Link>
                           )}
                         </div>

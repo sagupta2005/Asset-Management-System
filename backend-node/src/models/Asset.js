@@ -36,6 +36,16 @@ const Asset = sequelize.define('Asset', {
 }, {
   tableName: 'assets',
   timestamps: true,
+  indexes: [
+    { unique: true, fields: ['assetTag'] },
+    { unique: true, fields: ['serialNumber'] },
+    { fields: ['status'] },
+    { fields: ['name'] },
+    { fields: ['category_id'] },
+    { fields: ['vendor_id'] },
+    { fields: ['department_id'] },
+    { fields: ['assigned_to_id'] },
+  ]
 });
 
 module.exports = Asset;

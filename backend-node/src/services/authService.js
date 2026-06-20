@@ -252,8 +252,26 @@ async function getProfile(userId) {
     lastLogin: user.lastLogin,
     department: user.department ? { id: user.department.id, name: user.department.name } : null,
     roles: user.Roles ? user.Roles.map(r => r.name) : [],
+    emailAlerts: user.emailAlerts,
+    maintenanceUpdates: user.maintenanceUpdates,
+    systemAudits: user.systemAudits,
     createdAt: user.createdAt,
   };
+}
+
+async function updateProfile(userId, data) {
+  const user = await User.findByPk(userId);
+  if (!user) throw new ResourceNotFoundError('User', 'id', userId);
+
+  if (data.firstName !== undefined) user.firstName = data.firstName;
+  if (data.lastName !== undefined) user.lastName = data.lastName;
+  if (data.phone !== undefined) user.phone = data.phone;
+  if (data.emailAlerts !== undefined) user.emailAlerts = Boolean(data.emailAlerts);
+  if (data.maintenanceUpdates !== undefined) user.maintenanceUpdates = Boolean(data.maintenanceUpdates);
+  if (data.systemAudits !== undefined) user.systemAudits = Boolean(data.systemAudits);
+
+  await user.save();
+  return getProfile(userId);
 }
 
 // ─── Helpers ────────────────────────────────────────────────────────────────
@@ -271,6 +289,9 @@ function buildAuthResponse(user, roles, accessToken, refreshToken) {
     avatarUrl: user.avatarUrl,
     roles,
     department: user.department ? user.department.name : null,
+    emailAlerts: user.emailAlerts,
+    maintenanceUpdates: user.maintenanceUpdates,
+    systemAudits: user.systemAudits,
   };
 }
 
@@ -283,4 +304,5 @@ module.exports = {
   changePassword,
   logout,
   getProfile,
+  updateProfile,
 };

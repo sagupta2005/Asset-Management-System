@@ -58,4 +58,14 @@ router.get('/profile', authenticate, async (req, res) => {
   res.status(200).json(ApiResponse.success(data));
 });
 
+router.get('/me', authenticate, async (req, res) => {
+  const data = await authService.getProfile(req.user.id);
+  res.status(200).json(ApiResponse.success(data));
+});
+
+router.put('/profile', authenticate, async (req, res) => {
+  const data = await authService.updateProfile(req.user.id, req.body);
+  res.status(200).json(ApiResponse.success(data, 'Profile updated successfully'));
+});
+
 module.exports = router;

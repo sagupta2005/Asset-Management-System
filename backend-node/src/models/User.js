@@ -23,6 +23,9 @@ const User = sequelize.define('User', {
   passwordResetToken: { type: DataTypes.STRING(255), field: 'passwordResetToken' },
   resetTokenExpiry: { type: DataTypes.DATE, field: 'resetTokenExpiry' },
   departmentId: { type: DataTypes.BIGINT, field: 'department_id' },
+  emailAlerts: { type: DataTypes.BOOLEAN, defaultValue: true, field: 'emailAlerts' },
+  maintenanceUpdates: { type: DataTypes.BOOLEAN, defaultValue: true, field: 'maintenanceUpdates' },
+  systemAudits: { type: DataTypes.BOOLEAN, defaultValue: true, field: 'systemAudits' },
 }, {
   tableName: 'users',
   timestamps: true,

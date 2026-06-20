@@ -9,6 +9,8 @@ import {
   Activity, Building2, Shield, RefreshCw, ArrowUpRight, ArrowDownRight
 } from 'lucide-react'
 import { dashboardApi } from '../../api/index'
+import useLanguageStore from '../../store/languageStore'
+import { useTranslation } from '../../utils/translations'
 import { formatCurrency, formatNumber } from '../../utils/formatters'
 import { CHART_COLORS } from '../../utils/constants'
 
@@ -68,6 +70,9 @@ const CustomTooltip = ({ active, payload, label }) => {
 
 // ─── Main Dashboard ───────────────────────────────────────────────────────────
 export default function DashboardPage() {
+  const { lang } = useLanguageStore()
+  const t = useTranslation(lang)
+
   const { data: stats, isLoading: statsLoading, refetch } = useQuery({
     queryKey: ['dashboard', 'stats'],
     queryFn: () => dashboardApi.getStats().then(r => r.data.data),
@@ -100,13 +105,13 @@ export default function DashboardPage() {
         <div>
           <div className="flex items-center gap-2 mb-0.5">
             <div className="w-1 h-6 rounded-full" style={{ background: '#8B0000' }} />
-            <h1 className="page-title">Operations Dashboard</h1>
+            <h1 className="page-title">{t("Operations Dashboard")}</h1>
           </div>
-          <p className="page-subtitle pl-3">Real-time overview of Indian Railways asset management system</p>
+          <p className="page-subtitle pl-3">{t("Real-time overview of Indian Railways asset management system")}</p>
         </div>
         <button onClick={() => refetch()} className="btn-secondary btn-sm">
           <RefreshCw size={13} />
-          Refresh Data
+          {t("Refresh Data")}
         </button>
       </div>
 
@@ -116,14 +121,14 @@ export default function DashboardPage() {
           Array.from({ length: 8 }).map((_, i) => <SkeletonCard key={i} />)
         ) : stats ? (
           <>
-            <StatCard icon={Package} label="Total Assets" value={stats.totalAssets} color="#6366f1" />
-            <StatCard icon={Package} label="Available" value={stats.availableAssets} color="#10b981" />
-            <StatCard icon={Users} label="Assigned" value={stats.assignedAssets} color="#3b82f6" />
-            <StatCard icon={Wrench} label="Under Repair" value={stats.underRepair} color="#f59e0b" />
-            <StatCard icon={AlertTriangle} label="Warranty Expiring" value={stats.warrantyExpiringIn30Days} color="#ef4444" />
-            <StatCard icon={Building2} label="Employees" value={stats.totalEmployees} color="#8b5cf6" />
-            <StatCard icon={TrendingDown} label="Open Maintenance" value={stats.openMaintenanceRequests} color="#ec4899" />
-            <StatCard icon={Activity} label="High Risk Assets" value={stats.highRiskAssets} color="#f97316" />
+            <StatCard icon={Package} label={t("Total Assets")} value={stats.totalAssets} color="#6366f1" />
+            <StatCard icon={Package} label={t("Available")} value={stats.availableAssets} color="#10b981" />
+            <StatCard icon={Users} label={t("Assigned")} value={stats.assignedAssets} color="#3b82f6" />
+            <StatCard icon={Wrench} label={t("Under Repair")} value={stats.underRepair} color="#f59e0b" />
+            <StatCard icon={AlertTriangle} label={t("Warranty Expiring")} value={stats.warrantyExpiringIn30Days} color="#ef4444" />
+            <StatCard icon={Building2} label={t("Total Employees")} value={stats.totalEmployees} color="#8b5cf6" />
+            <StatCard icon={TrendingDown} label={t("Open Maintenance")} value={stats.openMaintenanceRequests} color="#ec4899" />
+            <StatCard icon={Activity} label={t("High Risk Assets")} value={stats.highRiskAssets} color="#f97316" />
           </>
         ) : null}
       </div>
@@ -132,19 +137,19 @@ export default function DashboardPage() {
       {stats && (
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-8">
           <div className="card p-5 col-span-3 md:col-span-1">
-            <p className="text-xs uppercase tracking-wide font-semibold" style={{ color: 'rgb(var(--text-muted))' }}>Total Purchase Value</p>
+            <p className="text-xs uppercase tracking-wide font-semibold" style={{ color: 'rgb(var(--text-muted))' }}>{t("Total Purchase Value")}</p>
             <p className="text-2xl font-bold mt-1" style={{ color: 'rgb(var(--text-primary))' }}>
               {formatCurrency(stats.totalPurchaseValue)}
             </p>
           </div>
           <div className="card p-5">
-            <p className="text-xs uppercase tracking-wide font-semibold" style={{ color: 'rgb(var(--text-muted))' }}>Current Book Value</p>
+            <p className="text-xs uppercase tracking-wide font-semibold" style={{ color: 'rgb(var(--text-muted))' }}>{t("Current Book Value")}</p>
             <p className="text-2xl font-bold mt-1 text-emerald-500">
               {formatCurrency(stats.totalCurrentValue)}
             </p>
           </div>
           <div className="card p-5">
-            <p className="text-xs uppercase tracking-wide font-semibold" style={{ color: 'rgb(var(--text-muted))' }}>Total Depreciation</p>
+            <p className="text-xs uppercase tracking-wide font-semibold" style={{ color: 'rgb(var(--text-muted))' }}>{t("Total Depreciation")}</p>
             <p className="text-2xl font-bold mt-1 text-amber-500">
               {formatCurrency(stats.totalDepreciation)}
             </p>

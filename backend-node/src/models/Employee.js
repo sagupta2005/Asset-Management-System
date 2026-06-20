@@ -18,6 +18,12 @@ const Employee = sequelize.define('Employee', {
 }, {
   tableName: 'employees',
   timestamps: true,
+  indexes: [
+    { unique: true, fields: ['employeeCode'] },
+    { unique: true, fields: ['email'] },
+    { fields: ['department_id'] },
+    { fields: ['user_id'] },
+  ]
 });
 
 module.exports = Employee;

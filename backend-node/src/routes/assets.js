@@ -21,6 +21,43 @@ router.get('/stats', authenticate, async (req, res) => {
   res.status(200).json(ApiResponse.success(data));
 });
 
+router.get('/public/passport/:assetTag', async (req, res) => {
+  const { assetTag } = req.params;
+  const asset = await assetService.getAssetByTag(assetTag);
+
+  const { AssetAllocation, MaintenanceRequest, WarrantyTracking, DepreciationRecord, Employee } = require('../models');
+
+  const [allocations, maintenance, warranty, depreciation] = await Promise.all([
+    AssetAllocation.findAll({
+      where: { assetId: asset.id },
+      include: [{ model: Employee, as: 'employee', attributes: ['firstName', 'lastName'] }],
+      order: [['allocatedDate', 'DESC']],
+      limit: 10
+    }),
+    MaintenanceRequest.findAll({
+      where: { assetId: asset.id },
+      order: [['startDate', 'DESC']],
+      limit: 10
+    }),
+    WarrantyTracking.findOne({
+      where: { assetId: asset.id }
+    }),
+    DepreciationRecord.findAll({
+      where: { assetId: asset.id },
+      order: [['financialYear', 'DESC']],
+      limit: 10
+    })
+  ]);
+
+  res.status(200).json(ApiResponse.success({
+    asset,
+    allocations,
+    maintenance,
+    warranty,
+    depreciation
+  }));
+});
+
 router.get('/tag/:assetTag', authenticate, async (req, res) => {
   const data = await assetService.getAssetByTag(req.params.assetTag);
   res.status(200).json(ApiResponse.success(data));
